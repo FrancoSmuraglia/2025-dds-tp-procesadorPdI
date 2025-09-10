@@ -1,28 +1,17 @@
-# Etapa 1: Build
-FROM openjdk:19-jdk AS build
+# Stage 1: Build the application with JDK 21
+# Importing JDK and copying required files
+FROM maven:3.9.4-eclipse-temurin-21 AS build
+# Updated to use an available Maven/OpenJDK 21 image
 WORKDIR /app
+# Set working directory inside the container
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copiar el pom y el código fuente
-COPY pom.xml .
-COPY src src
-
-# Copiar Maven Wrapper
-COPY mvnw .
-COPY .mvn .mvn
-
-# Dar permisos al wrapper y compilar
-RUN chmod +x ./mvnw
-RUN ./mvnw clean package -DskipTests
-
-# Etapa 2: Runtime
-FROM openjdk:17-jdk
+# Stage 2: Create the final Docker image using OpenJDK 21
+FROM openjdk:21-jdk
 VOLUME /tmp
 
-# Copiar el JAR desde la etapa de build
+# Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
-
-# Ejecutar la aplicación
 ENTRYPOINT ["java","-jar","/app.jar"]
-
-# Exponer puerto 8080
 EXPOSE 8080
