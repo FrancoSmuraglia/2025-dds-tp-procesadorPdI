@@ -7,7 +7,6 @@ import ar.edu.utn.dds.k3003.model.PdI;
 import ar.edu.utn.dds.k3003.repository.InMemoryPdIRepo;
 import ar.edu.utn.dds.k3003.repository.PdIRepository;
 import lombok.val;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ public class Fachada implements FachadaProcesadorPdI{
 
     private int idCounter = 1;
 
-    private PdIRepository pdIRepository;
+    private final PdIRepository pdIRepository;
     private FachadaSolicitudes fachadaSolicitudes;
 
     public Fachada(){
