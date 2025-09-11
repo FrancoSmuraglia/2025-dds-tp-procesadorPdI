@@ -59,12 +59,17 @@ public class Fachada implements FachadaProcesadorPdI{
 
     @Override
     public PdIDTO buscarPdIPorId(String pdiId) throws NoSuchElementException {
-        if (this.pdIRepository.findById(Integer.parseInt(pdiId)).isPresent()){
-            return new PdIDTO(pdiId, this.pdIRepository.findById(Integer.parseInt(pdiId)).get().getHechoId());
-        }
-        else {
-            throw new NoSuchElementException("El PdI con Id" + pdiId + " no existe");
-        }
+        return this.pdIRepository.findById(Integer.parseInt(pdiId))
+                .map(pdi -> new PdIDTO(
+                        pdi.getId().toString(),
+                        pdi.getHechoId(),
+                        pdi.getDescripcion(),
+                        pdi.getLugar(),
+                        pdi.getMomento(),
+                        pdi.getContenido(),
+                        pdi.getEtiquetas()
+                ))
+                .orElseThrow(() -> new NoSuchElementException("El PdI con Id " + pdiId + " no existe"));
     }
 
     @Override
