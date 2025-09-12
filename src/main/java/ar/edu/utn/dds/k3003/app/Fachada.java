@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.clients.SolicitudesProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.FachadaSolicitudes;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
@@ -20,17 +21,17 @@ public class Fachada implements FachadaProcesadorPdI{
     private int idCounter = 1;
 
     private final PdIRepository pdIRepository;
-    private FachadaSolicitudes fachadaSolicitudes;
+    private SolicitudesProxy solicitudesProxy;
 
     public Fachada(){
         this.pdIRepository = new InMemoryPdIRepo();
-        this.fachadaSolicitudes = null;
+        this.solicitudesProxy = null;
     }
 
     @Autowired
-    public Fachada(PdIRepository pdIRepository, FachadaSolicitudes fachadaSolicitudes) {
+    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy) {
         this.pdIRepository = pdIRepository;
-        this.fachadaSolicitudes = fachadaSolicitudes;
+        this.solicitudesProxy = solicitudesProxy;
     }
 
     public int generarNuevoId(){
@@ -47,7 +48,7 @@ public class Fachada implements FachadaProcesadorPdI{
         if (pdiYaExiste){
             return pdi;
         }
-        if (fachadaSolicitudes.estaActivo(pdi.hechoId())){
+        if (solicitudesProxy.estaActivo(pdi.hechoId())){
             val pdiNuevo = new PdI(this.generarNuevoId(), pdi.hechoId(), pdi.descripcion(), pdi.lugar(), pdi.momento(), pdi.contenido(), pdi.etiquetas());
             this.pdIRepository.save(pdiNuevo);
             return new PdIDTO(pdiNuevo.getId().toString(), pdiNuevo.getHechoId());
@@ -87,8 +88,8 @@ public class Fachada implements FachadaProcesadorPdI{
 
     @Override
     public void setFachadaSolicitudes(FachadaSolicitudes fachadaSolicitudes) {
-        if (this.fachadaSolicitudes == null){
-            this.fachadaSolicitudes = fachadaSolicitudes;
+        if (this.solicitudesProxy == null){
+            this.solicitudesProxy = solicitudesProxy;
         }
     }
 
