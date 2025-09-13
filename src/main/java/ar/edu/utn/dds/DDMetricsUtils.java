@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.pdi;
+package ar.edu.utn.dds;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
