@@ -1,7 +1,9 @@
 package ar.edu.utn.dds.k3003.controller;
 
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +14,10 @@ import java.util.List;
 @RequestMapping("/api/pdis")
 public class PdIController {
 
-    private final FachadaProcesadorPdI fachadaProcesadorPdI;
+    private final Fachada fachadaProcesadorPdI;
 
     @Autowired
-    public PdIController(FachadaProcesadorPdI fachadaProcesadorPdI) {
+    public PdIController(Fachada fachadaProcesadorPdI) {
         this.fachadaProcesadorPdI = fachadaProcesadorPdI;
     }
 
@@ -38,5 +40,11 @@ public class PdIController {
     @GetMapping(params = "hecho")
     public ResponseEntity<List<PdIDTO>> buscarPorHecho(@RequestParam String hecho){
         return ResponseEntity.ok(fachadaProcesadorPdI.buscarPorHecho(hecho));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> borrarTodo() {
+        fachadaProcesadorPdI.borrarTodo();
+        return ResponseEntity.noContent().build();
     }
 }

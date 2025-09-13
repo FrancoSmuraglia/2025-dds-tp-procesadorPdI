@@ -40,4 +40,8 @@ public class InMemoryPdIRepo implements PdIRepository{
     public List<PdI> findAll(){
         return new ArrayList<>(pdis);
     }
+
+    @Override
+    public void deleteAll() {
+    }
 }

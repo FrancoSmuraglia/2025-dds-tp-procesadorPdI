@@ -11,4 +11,5 @@ public interface PdIRepository {
     Optional<List<PdI>> findByHechoId(String id);
     PdI save(PdI pdi);
     List<PdI> findAll();
+    void deleteAll();
 }

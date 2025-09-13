@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.NoArgsConstructor;
-
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class PdI {
 
     @ElementCollection
     @CollectionTable(name = "pdi_etiquetas", joinColumns = @JoinColumn(name = "pdi_id"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @Column(name = "etiqueta")
     private List<String> etiquetas;
 

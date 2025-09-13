@@ -98,4 +98,8 @@ public class Fachada implements FachadaProcesadorPdI{
                 .map(pdi -> new PdIDTO(pdi.getId().toString(), pdi.getHechoId()))
                 .collect(Collectors.toList());
     }
+
+    public void borrarTodo() {
+        pdIRepository.deleteAll();
+    }
 }
