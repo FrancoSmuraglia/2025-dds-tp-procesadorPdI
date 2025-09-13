@@ -26,7 +26,6 @@ public class PdI {
 
     @ElementCollection
     @CollectionTable(name = "pdi_etiquetas", joinColumns = @JoinColumn(name = "pdi_id"))
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @Column(name = "etiqueta")
     private List<String> etiquetas;
 
