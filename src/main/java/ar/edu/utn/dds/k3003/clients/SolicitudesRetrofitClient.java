@@ -6,6 +6,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface SolicitudesRetrofitClient {
-    @GET("/hecho/{id}/estaActivo")
+    @GET("/estadoHecho/{id}")
     Call<Boolean> estaActivo(@Path("id")String id );
 }
