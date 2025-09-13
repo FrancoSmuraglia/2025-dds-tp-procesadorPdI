@@ -24,7 +24,7 @@ public class SolicitudesProxy  {
     public SolicitudesProxy(ObjectMapper objectMapper) {
 
         var env = System.getenv();
-        this.endpoint = env.getOrDefault("Solicitudes", "https://grupo12-solicitudes.onrender.com");
+        this.endpoint = env.getOrDefault("Solicitudes", "https://grupo12-solicitudes.onrender.com/");
 
         var retrofit =
                 new Retrofit.Builder()
