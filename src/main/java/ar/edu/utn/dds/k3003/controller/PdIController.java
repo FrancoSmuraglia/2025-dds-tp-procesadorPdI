@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pdis")
+@RequestMapping("/api")
 public class PdIController {
 
     private final Fachada fachadaProcesadorPdI;
@@ -21,28 +21,28 @@ public class PdIController {
         this.fachadaProcesadorPdI = fachadaProcesadorPdI;
     }
 
-    @GetMapping
+    @GetMapping("/pdis")
     public ResponseEntity<List<PdIDTO>> listarPdis(){
         //return ResponseEntity.ok(fachadaProcesadorPdI.listarTodos());
         return null;
     }
 
-    @PostMapping
+    @PostMapping("/pdis")
     public ResponseEntity<PdIDTO> crearPdI(@RequestBody PdIDTO pdIDTO){
         return ResponseEntity.ok(fachadaProcesadorPdI.procesar(pdIDTO));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/pdis/{id}")
     public ResponseEntity<PdIDTO> buscarPorId(@PathVariable String id){
         return ResponseEntity.ok(fachadaProcesadorPdI.buscarPdIPorId(id));
     }
 
-    @GetMapping(params = "hecho")
-    public ResponseEntity<List<PdIDTO>> buscarPorHecho(@RequestParam String hecho){
+    @GetMapping("/hechos/{id}/pdis")
+    public ResponseEntity<List<PdIDTO>> buscarPorHecho(@PathVariable String hecho){
         return ResponseEntity.ok(fachadaProcesadorPdI.buscarPorHecho(hecho));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/pdis")
     public ResponseEntity<Void> borrarTodo() {
         fachadaProcesadorPdI.borrarTodo();
         return ResponseEntity.noContent().build();
