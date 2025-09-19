@@ -24,8 +24,7 @@ public class PdIController {
 
     @GetMapping("/pdis")
     public ResponseEntity<List<PdIDTO>> listarPdis(){
-        //return ResponseEntity.ok(fachadaProcesadorPdI.listarTodos());
-        return null;
+        return ResponseEntity.ok(fachadaProcesadorPdI.listarTodos());
     }
 
     @PostMapping("/pdis")
@@ -38,9 +37,9 @@ public class PdIController {
         return ResponseEntity.ok(fachadaProcesadorPdI.buscarPdIPorId(id));
     }
 
-    @GetMapping("/hechos/{id}/pdis")
-    public ResponseEntity<List<PdIDTO>> buscarPorHecho(@PathVariable String hecho){
-        return ResponseEntity.ok(fachadaProcesadorPdI.buscarPorHecho(hecho));
+    @GetMapping("/hechos/{hechoId}/pdis")
+    public ResponseEntity<List<PdIDTO>> buscarPorHecho(@PathVariable String hechoId){
+        return ResponseEntity.ok(fachadaProcesadorPdI.buscarPorHecho(hechoId));
     }
 
     @DeleteMapping("/pdis")
