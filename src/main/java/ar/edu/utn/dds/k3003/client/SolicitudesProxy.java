@@ -1,7 +1,6 @@
-package ar.edu.utn.dds.k3003.clients;
+package ar.edu.utn.dds.k3003.client;
 
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
-import ar.edu.utn.dds.k3003.facades.FachadaSolicitudes;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoSolicitudBorradoEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
