@@ -78,7 +78,15 @@ public class Fachada implements FachadaProcesadorPdI{
         if (this.pdIRepository.findByHechoId(hechoId).isPresent()){
             return pdIRepository.findByHechoId(hechoId).get()
                     .stream()
-                    .map(pdi -> new PdIDTO(pdi.getId().toString(), pdi.getHechoId()))
+                    .map(pdi -> new PdIDTO(
+                            pdi.getId().toString(),
+                            pdi.getHechoId(),
+                            pdi.getDescripcion(),
+                            pdi.getLugar(),
+                            pdi.getMomento(),
+                            pdi.getContenido(),
+                            pdi.getEtiquetas()
+                    ))
                     .collect(Collectors.toList());
         }
         else {
