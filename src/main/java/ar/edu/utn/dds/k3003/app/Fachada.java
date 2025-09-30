@@ -75,7 +75,7 @@ public class Fachada implements FachadaProcesadorPdI{
 
     @Override
     public List<PdIDTO> buscarPorHecho(String hechoId) throws NoSuchElementException {
-        if (this.pdIRepository.findByHechoId(hechoId).isPresent()){
+        if (solicitudesProxy.estaActivo(hechoId)){
             return pdIRepository.findByHechoId(hechoId).get()
                     .stream()
                     .map(pdi -> new PdIDTO(
@@ -90,7 +90,7 @@ public class Fachada implements FachadaProcesadorPdI{
                     .collect(Collectors.toList());
         }
         else {
-            throw new NoSuchElementException("No hay un hecho con id: " + hechoId);
+            throw new NoSuchElementException("No hay un hecho con id: " + hechoId + "O el hecho está censurado");
         }
     }
 
