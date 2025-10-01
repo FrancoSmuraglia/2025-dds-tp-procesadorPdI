@@ -45,14 +45,14 @@ public class PdI {
                 (etiquetasAuto != null && !etiquetasAuto.isEmpty());
     }
 
-    public PdI(Integer id, String hechoId, String descripcion, String lugar, LocalDateTime momento, String contenido, List<String> etiquetas) {
+    public PdI(Integer id, String hechoId, String descripcion, String lugar, LocalDateTime momento, String contenido, String imagenUrl) {
         this.id = id;
         this.hechoId = hechoId;
         this.descripcion = descripcion;
         this.lugar = lugar;
         this.momento = momento;
         this.contenido = contenido;
-        this.etiquetas = etiquetas;
+        this.imagenUrl = imagenUrl;
     }
     public PdI(String hechoId, String descripcion, String lugar, LocalDateTime momento, String contenido, String imagenUrl) {
         this.hechoId = hechoId;

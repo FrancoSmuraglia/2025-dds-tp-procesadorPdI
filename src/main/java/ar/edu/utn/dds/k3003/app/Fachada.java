@@ -1,10 +1,10 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.client.SolicitudesProxy;
-import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.FachadaSolicitudes;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.PdI;
+import ar.edu.utn.dds.k3003.model.dtos.PdI_DTO;
 import ar.edu.utn.dds.k3003.repository.InMemoryPdIRepo;
 import ar.edu.utn.dds.k3003.repository.PdIRepository;
 import lombok.val;
@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class Fachada implements FachadaProcesadorPdI{
+public class Fachada implements Fachada_Procesador_PdI{
 
     private int idCounter = 1;
 
@@ -39,7 +39,7 @@ public class Fachada implements FachadaProcesadorPdI{
     }
     
     @Override
-    public PdIDTO procesar(PdIDTO pdi) throws IllegalStateException {
+    public PdI_DTO procesar(PdI_DTO pdi) throws IllegalStateException {
         var pdisExistentes = this.pdIRepository.findByHechoId(pdi.hechoId());
         boolean pdiYaExiste = pdisExistentes
                 .map(lista -> lista.stream()
@@ -49,9 +49,9 @@ public class Fachada implements FachadaProcesadorPdI{
             return pdi;
         }
         if (solicitudesProxy.estaActivo(pdi.hechoId())){
-            val pdiNuevo = new PdI(this.generarNuevoId(), pdi.hechoId(), pdi.descripcion(), pdi.lugar(), pdi.momento(), pdi.contenido(), pdi.etiquetas());
+            val pdiNuevo = new PdI(this.generarNuevoId(), pdi.hechoId(), pdi.descripcion(), pdi.lugar(), pdi.momento(), pdi.contenido(), pdi.imagenUrl());
             this.pdIRepository.save(pdiNuevo);
-            return new PdIDTO(pdiNuevo.getId().toString(), pdiNuevo.getHechoId());
+            return new PdI_DTO(pdiNuevo.getId().toString(), pdiNuevo.getHechoId());
         }
         else {
             throw new IllegalStateException(pdi.hechoId() + " está censurado");
@@ -59,33 +59,37 @@ public class Fachada implements FachadaProcesadorPdI{
     }
 
     @Override
-    public PdIDTO buscarPdIPorId(String pdiId) throws NoSuchElementException {
+    public PdI_DTO buscarPdIPorId(String pdiId) throws NoSuchElementException {
         return this.pdIRepository.findById(Integer.parseInt(pdiId))
-                .map(pdi -> new PdIDTO(
+                .map(pdi -> new PdI_DTO(
                         pdi.getId().toString(),
                         pdi.getHechoId(),
                         pdi.getDescripcion(),
                         pdi.getLugar(),
                         pdi.getMomento(),
                         pdi.getContenido(),
-                        pdi.getEtiquetas()
+                        pdi.getImagenUrl(),
+                        pdi.getOcrTexto(),
+                        pdi.getEtiquetasAuto()
                 ))
                 .orElseThrow(() -> new NoSuchElementException("El PdI con Id " + pdiId + " no existe"));
     }
 
     @Override
-    public List<PdIDTO> buscarPorHecho(String hechoId) throws NoSuchElementException {
+    public List<PdI_DTO> buscarPorHecho(String hechoId) throws NoSuchElementException {
         if (solicitudesProxy.estaActivo(hechoId)){
             return pdIRepository.findByHechoId(hechoId).get()
                     .stream()
-                    .map(pdi -> new PdIDTO(
+                    .map(pdi -> new PdI_DTO(
                             pdi.getId().toString(),
                             pdi.getHechoId(),
                             pdi.getDescripcion(),
                             pdi.getLugar(),
                             pdi.getMomento(),
                             pdi.getContenido(),
-                            pdi.getEtiquetas()
+                            pdi.getImagenUrl(),
+                            pdi.getOcrTexto(),
+                            pdi.getEtiquetasAuto()
                     ))
                     .collect(Collectors.toList());
         }
@@ -101,16 +105,18 @@ public class Fachada implements FachadaProcesadorPdI{
         }
     }
 
-    public List<PdIDTO> listarTodos() {
+    public List<PdI_DTO> listarTodos() {
         return this.pdIRepository.findAll().stream()
-                .map(pdi -> new PdIDTO(
+                .map(pdi -> new PdI_DTO(
                         pdi.getId().toString(),
                         pdi.getHechoId(),
                         pdi.getDescripcion(),
                         pdi.getLugar(),
                         pdi.getMomento(),
                         pdi.getContenido(),
-                        pdi.getEtiquetas()
+                        pdi.getImagenUrl(),
+                        pdi.getOcrTexto(),
+                        pdi.getEtiquetasAuto()
                 ))
                 .collect(Collectors.toList());
     }
