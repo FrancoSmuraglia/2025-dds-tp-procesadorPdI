@@ -7,6 +7,7 @@ import ar.edu.utn.dds.k3003.model.PdI;
 import ar.edu.utn.dds.k3003.model.dtos.PdI_DTO;
 import ar.edu.utn.dds.k3003.repository.InMemoryPdIRepo;
 import ar.edu.utn.dds.k3003.repository.PdIRepository;
+import ar.edu.utn.dds.k3003.service.ProcesadorService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,16 +23,14 @@ public class Fachada implements Fachada_Procesador_PdI{
 
     private final PdIRepository pdIRepository;
     private SolicitudesProxy solicitudesProxy;
+    private final ProcesadorService procesadorService;
 
-    public Fachada(){
-        this.pdIRepository = new InMemoryPdIRepo();
-        this.solicitudesProxy = null;
-    }
 
     @Autowired
-    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy) {
+    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy, ProcesadorService procesadorService) {
         this.pdIRepository = pdIRepository;
         this.solicitudesProxy = solicitudesProxy;
+        this.procesadorService = procesadorService;
     }
 
     public int generarNuevoId(){
@@ -40,6 +39,7 @@ public class Fachada implements Fachada_Procesador_PdI{
     
     @Override
     public PdI_DTO procesar(PdI_DTO pdi) throws IllegalStateException {
+        // Validar duplicados
         var pdisExistentes = this.pdIRepository.findByHechoId(pdi.hechoId());
         boolean pdiYaExiste = pdisExistentes
                 .map(lista -> lista.stream()
@@ -48,10 +48,33 @@ public class Fachada implements Fachada_Procesador_PdI{
         if (pdiYaExiste){
             return pdi;
         }
+        // Validar si el hecho está activo
         if (solicitudesProxy.estaActivo(pdi.hechoId())){
-            val pdiNuevo = new PdI(this.generarNuevoId(), pdi.hechoId(), pdi.descripcion(), pdi.lugar(), pdi.momento(), pdi.contenido(), pdi.imagenUrl());
+            val pdiNuevo = new PdI(
+                    this.generarNuevoId(),
+                    pdi.hechoId(),
+                    pdi.descripcion(),
+                    pdi.lugar(),
+                    pdi.momento(),
+                    pdi.contenido(),
+                    pdi.imagenUrl()
+            );
+
+            // Procesar imagen (OCR + etiquetas)
+            procesadorService.procesar(pdiNuevo);
+
             this.pdIRepository.save(pdiNuevo);
-            return new PdI_DTO(pdiNuevo.getId().toString(), pdiNuevo.getHechoId());
+            return new PdI_DTO(
+                    pdiNuevo.getId().toString(),
+                    pdiNuevo.getHechoId(),
+                    pdiNuevo.getDescripcion(),
+                    pdiNuevo.getLugar(),
+                    pdiNuevo.getMomento(),
+                    pdiNuevo.getContenido(),
+                    pdiNuevo.getImagenUrl(),
+                    pdiNuevo.getOcrTexto(),
+                    pdiNuevo.getEtiquetasAuto()
+            );
         }
         else {
             throw new IllegalStateException(pdi.hechoId() + " está censurado");
