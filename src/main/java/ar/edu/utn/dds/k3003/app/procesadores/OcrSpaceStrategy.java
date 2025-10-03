@@ -10,7 +10,7 @@ import java.util.Map;
 public class OcrSpaceStrategy implements OcrStrategy{
 
     private final RestTemplate restTemplate;
-    private final String apiKey = "API_KEY";
+    private final String apiKey = "K89295320288957";
 
     public OcrSpaceStrategy(RestTemplate restTemplate){
         this.restTemplate = restTemplate;
