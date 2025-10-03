@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app.procesadores;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,17 +33,22 @@ public class ApiLayerEtiquetadorStrategy implements EtiquetadorStrategy{
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
-        List<Map<String, Object>> result = response.getBody();
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        String bodyStr = response.getBody();
 
-        if (result == null){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            // Mapea directamente a lista
+            List<Map<String, Object>> results = mapper.readValue(bodyStr, List.class);
+
+            List<String> etiquetas = new ArrayList<>();
+            for (Map<String, Object> item : results) {
+                etiquetas.add(item.get("label").toString());
+            }
+            return etiquetas;
+        } catch (Exception e) {
+            System.err.println("Error al parsear API Layer: " + bodyStr);
             return Collections.emptyList();
         }
-
-        List<String> etiquetas = new ArrayList<>();
-        for (Map<String, Object> item : result) {
-            etiquetas.add(item.get("label").toString());
-        }
-        return etiquetas;
     }
 }

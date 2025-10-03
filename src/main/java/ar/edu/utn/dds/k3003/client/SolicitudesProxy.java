@@ -24,7 +24,7 @@ public class SolicitudesProxy  {
 
         var env = System.getenv();
         this.endpoint = env.getOrDefault("Solicitudes", "https://grupo12-solicitudes.onrender.com/");
-
+        //Local en Docker: http://solicitudes:8081/
         var retrofit =
                 new Retrofit.Builder()
                         .baseUrl(this.endpoint)
