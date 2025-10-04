@@ -7,6 +7,7 @@ import java.util.List;
 
 public record PdI_DTO(
         String id,
+        @JsonProperty("hecho_id")
         String hechoId,
         String descripcion,
         String lugar,
