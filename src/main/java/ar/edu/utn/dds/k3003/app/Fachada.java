@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.client.SolicitudesProxy;
+import ar.edu.utn.dds.k3003.config.RabbitConfig;
 import ar.edu.utn.dds.k3003.facades.FachadaSolicitudes;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.PdI;
@@ -9,6 +10,7 @@ import ar.edu.utn.dds.k3003.repository.InMemoryPdIRepo;
 import ar.edu.utn.dds.k3003.repository.PdIRepository;
 import ar.edu.utn.dds.k3003.service.ProcesadorService;
 import lombok.val;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +26,15 @@ public class Fachada implements Fachada_Procesador_PdI{
     private final PdIRepository pdIRepository;
     private SolicitudesProxy solicitudesProxy;
     private final ProcesadorService procesadorService;
+    private final RabbitTemplate rabbitTemplate;
 
 
     @Autowired
-    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy, ProcesadorService procesadorService) {
+    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy, ProcesadorService procesadorService, RabbitTemplate rabbitTemplate) {
         this.pdIRepository = pdIRepository;
         this.solicitudesProxy = solicitudesProxy;
         this.procesadorService = procesadorService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public int generarNuevoId(){
@@ -60,10 +64,12 @@ public class Fachada implements Fachada_Procesador_PdI{
                     pdi.imagenUrl()
             );
 
-            // Procesar imagen (OCR + etiquetas)
-            procesadorService.procesar(pdiNuevo);
+            // Enviar mensaje a la cola de procesamiento
+            if (rabbitTemplate != null) {
+                rabbitTemplate.convertAndSend(RabbitConfig.PDI_COLA_PROCESADOR, pdiNuevo.getId().toString());
+                System.out.println("Mensaje enviado a cola PDI: " + pdiNuevo.getId());
+            }
 
-            this.pdIRepository.save(pdiNuevo);
             return new PdI_DTO(
                     pdiNuevo.getId().toString(),
                     pdiNuevo.getHechoId(),
@@ -72,8 +78,8 @@ public class Fachada implements Fachada_Procesador_PdI{
                     pdiNuevo.getMomento(),
                     pdiNuevo.getContenido(),
                     pdiNuevo.getImagenUrl(),
-                    pdiNuevo.getOcrTexto(),
-                    pdiNuevo.getEtiquetasAuto()
+                    "OCR Pendiente de procesamiento",
+                    List.of()
             );
         }
         else {
