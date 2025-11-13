@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 @Service
 public class Fachada implements Fachada_Procesador_PdI{
 
-    private int idCounter = 1;
-
     private final PdIRepository pdIRepository;
     private SolicitudesProxy solicitudesProxy;
     private final ProcesadorService procesadorService;
@@ -35,10 +33,6 @@ public class Fachada implements Fachada_Procesador_PdI{
         this.solicitudesProxy = solicitudesProxy;
         this.procesadorService = procesadorService;
         this.rabbitTemplate = rabbitTemplate;
-    }
-
-    public int generarNuevoId(){
-        return idCounter++;
     }
     
     @Override
@@ -55,7 +49,7 @@ public class Fachada implements Fachada_Procesador_PdI{
         // Validar si el hecho está activo
         if (solicitudesProxy.estaActivo(pdi.hechoId())){
             val pdiNuevo = new PdI(
-                    this.generarNuevoId(),
+                    null,
                     pdi.hechoId(),
                     pdi.descripcion(),
                     pdi.lugar(),
@@ -64,20 +58,22 @@ public class Fachada implements Fachada_Procesador_PdI{
                     pdi.imagenUrl()
             );
 
+            PdI pdiGuardado = this.pdIRepository.save(pdiNuevo);
+
             // Enviar mensaje a la cola de procesamiento
             if (rabbitTemplate != null) {
-                rabbitTemplate.convertAndSend(RabbitConfig.PDI_COLA_PROCESADOR, pdiNuevo.getId().toString());
-                System.out.println("Mensaje enviado a cola PDI: " + pdiNuevo.getId());
+                rabbitTemplate.convertAndSend(RabbitConfig.PDI_COLA_PROCESADOR, pdiGuardado.getId().toString());
+                System.out.println("Mensaje enviado a cola PDI: " + pdiGuardado.getId());
             }
 
             return new PdI_DTO(
-                    pdiNuevo.getId().toString(),
-                    pdiNuevo.getHechoId(),
-                    pdiNuevo.getDescripcion(),
-                    pdiNuevo.getLugar(),
-                    pdiNuevo.getMomento(),
-                    pdiNuevo.getContenido(),
-                    pdiNuevo.getImagenUrl(),
+                    pdiGuardado.getId().toString(),
+                    pdiGuardado.getHechoId(),
+                    pdiGuardado.getDescripcion(),
+                    pdiGuardado.getLugar(),
+                    pdiGuardado.getMomento(),
+                    pdiGuardado.getContenido(),
+                    pdiGuardado.getImagenUrl(),
                     "OCR Pendiente de procesamiento",
                     List.of()
             );

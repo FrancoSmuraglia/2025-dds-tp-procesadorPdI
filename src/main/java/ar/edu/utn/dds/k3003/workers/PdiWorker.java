@@ -23,8 +23,13 @@ public class PdiWorker {
      */
 
     @RabbitListener(queues = RabbitConfig.PDI_COLA_PROCESADOR)
-    public void procesarPdI(PdI pdi) {
+    public void procesarPdI(String mensaje) {
         try {
+            Integer pdiId = Integer.parseInt(mensaje);
+
+            // Buscar el PDI
+            PdI pdi = pdIRepository.findById(pdiId).orElseThrow(() -> new RuntimeException("Pdi no encontrado con ID: " + pdiId));
+
             System.out.println("Procesando PdI recibido: " + pdi.getId());
 
             // Procesamiento de OCR + etiquetas
@@ -35,7 +40,7 @@ public class PdiWorker {
 
             System.out.println("PdI procesado y guardado correctamente " + pdi.getId());
         } catch (Exception e) {
-            System.err.println("Error al procesar PdI " + pdi.getId() + ": " + e.getMessage());
+            System.err.println("Error al procesar PdI " + mensaje + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
