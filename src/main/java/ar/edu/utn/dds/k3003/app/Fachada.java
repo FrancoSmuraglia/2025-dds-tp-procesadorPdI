@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.busqueda.services.IndexadorService;
 import ar.edu.utn.dds.k3003.client.SolicitudesProxy;
 import ar.edu.utn.dds.k3003.config.RabbitConfig;
 import ar.edu.utn.dds.k3003.facades.FachadaSolicitudes;
@@ -25,14 +26,16 @@ public class Fachada implements Fachada_Procesador_PdI{
     private SolicitudesProxy solicitudesProxy;
     private final ProcesadorService procesadorService;
     private final RabbitTemplate rabbitTemplate;
+    private final IndexadorService indexadorService;
 
 
     @Autowired
-    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy, ProcesadorService procesadorService, RabbitTemplate rabbitTemplate) {
+    public Fachada(PdIRepository pdIRepository, SolicitudesProxy solicitudesProxy, ProcesadorService procesadorService, RabbitTemplate rabbitTemplate, IndexadorService indexadorService) {
         this.pdIRepository = pdIRepository;
         this.solicitudesProxy = solicitudesProxy;
         this.procesadorService = procesadorService;
         this.rabbitTemplate = rabbitTemplate;
+        this.indexadorService = indexadorService;
     }
     
     @Override
