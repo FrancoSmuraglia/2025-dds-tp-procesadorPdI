@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.config;
 
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.context.annotation.Bean;
@@ -8,13 +9,22 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-    // Nombre de la cola
+    // Nombre de la cola para procesar PDIs
     public static final String PDI_COLA_PROCESADOR = "pdi_cola_procesador";
+    
+    // Exchange para emitir eventos hacia otros módulos
+    public static final String TOPIC_EXCHANGE_NAME = "hechos-topic-exchange";
 
-    // Cola principal
+    // Cola principal para recibir PDIs a procesar
     @Bean
     public Queue pdiColaProcesador() {
         return new Queue(PDI_COLA_PROCESADOR, true);
+    }
+
+    // TopicExchange para publicar eventos cuando un PDI es procesado
+    @Bean
+    public TopicExchange topicExchange() {
+        return new TopicExchange(TOPIC_EXCHANGE_NAME, true, false);
     }
 
     // RabbitAdmin, para crear automáticamente colas declaradas
