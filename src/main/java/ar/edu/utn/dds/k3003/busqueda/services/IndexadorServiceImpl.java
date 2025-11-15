@@ -6,6 +6,7 @@ import ar.edu.utn.dds.k3003.model.PdI;
 import ar.edu.utn.dds.k3003.repository.PdIRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class IndexadorServiceImpl implements IndexadorService {
     }
 
     @Override
+    @Transactional
     public void indexarPdi(Integer pdiId) {
         log.info("Indexando PDI {} en MongoDB…", pdiId);
 
